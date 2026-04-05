@@ -7,8 +7,12 @@ import json
 # Tax Calculation Helpers
 # -------------------------------
 def load_tax_brackets(filepath="tax_brackets.json"):
-    with open(filepath, "r") as f:
-        return json.load(f)
+    try:
+        with open(filepath, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        st.error("⚠️ Tax brackets file not found. Please ensure tax_brackets.json is in the app directory.")
+        return {"brackets": [], "rebates": {"primary":0,"secondary":0,"tertiary":0}}
 
 def calculate_tax(annual_income, age, filepath="tax_brackets.json"):
     data = load_tax_brackets(filepath)
@@ -56,25 +60,34 @@ class HourlyCTCCalculator:
         total_working_days = len(working_days)
         total_amount = total_working_days * self.daily_rate
 
-        # Custom pay periods: 21st of one month → 20th of next
         periods = {}
-        current = pd.Timestamp(self.start_date.year, self.start_date.month, 21)
-        if current < self.start_date:
-            if current.month == 12:
-                current = pd.Timestamp(current.year + 1, 1, 21)
-            else:
-                current = pd.Timestamp(current.year, current.month + 1, 21)
 
+        # Handle initial partial period if start_date is before the 21st
+        if self.start_date.day < 21:
+            end = pd.Timestamp(self.start_date.year, self.start_date.month, 20)
+            period_days = working_days[(working_days >= self.start_date) & (working_days <= end)]
+            if len(period_days) > 0:
+                label = f"{self.start_date.strftime('%Y-%m-%d')} → {end.strftime('%Y-%m-%d')}"
+                periods[label] = round(len(period_days) * self.daily_rate, 2)
+            current = pd.Timestamp(self.start_date.year, self.start_date.month, 21)
+        else:
+            current = pd.Timestamp(self.start_date.year, self.start_date.month, 21)
+            if current < self.start_date:
+                if current.month == 12:
+                    current = pd.Timestamp(current.year + 1, 1, 21)
+                else:
+                    current = pd.Timestamp(current.year, current.month + 1, 21)
+
+        # Continue with normal 21st→20th cycles
         while current < self.end_date:
-            start = current
             if current.month == 12:
                 end = pd.Timestamp(current.year + 1, 1, 20)
             else:
                 end = pd.Timestamp(current.year, current.month + 1, 20)
 
-            period_days = working_days[(working_days >= start) & (working_days <= end)]
+            period_days = working_days[(working_days >= current) & (working_days <= end)]
             if len(period_days) > 0:
-                label = f"{start.strftime('%Y-%m-%d')} → {end.strftime('%Y-%m-%d')}"
+                label = f"{current.strftime('%Y-%m-%d')} → {end.strftime('%Y-%m-%d')}"
                 periods[label] = round(len(period_days) * self.daily_rate, 2)
 
             current = end + pd.Timedelta(days=1)
@@ -103,7 +116,7 @@ st.title("💰 Hourly Rate Cost-to-Company Calculator")
 
 hourly_rate = st.number_input("Enter Hourly Rate (ZAR)", min_value=0.0, value=556.5, step=1.0)
 hours_per_day = st.number_input("Hours Worked per Day", min_value=1, value=8, step=1)
-start_date = st.date_input("Start Date", pd.to_datetime("2026-01-01"))
+start_date = st.date_input("Start Date", pd.to_datetime("2025-10-01"))
 end_date = st.date_input("End Date", pd.to_datetime("2026-12-31"))
 country = st.text_input("Country Code (default ZA)", "ZA")
 age = st.number_input("Enter Age (for rebate)", min_value=18, value=30, step=1)
