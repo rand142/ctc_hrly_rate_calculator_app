@@ -1,0 +1,17 @@
+{
+  "year": "2026/27",
+  "brackets": [
+    { "lower": 0, "upper": 245100, "rate": 0.18, "base": 0 },
+    { "lower": 245101, "upper": 383100, "rate": 0.26, "base": 44118 },
+    { "lower": 383101, "upper": 530200, "rate": 0.31, "base": 79998 },
+    { "lower": 530201, "upper": 695800, "rate": 0.36, "base": 125599 },
+    { "lower": 695801, "upper": 887000, "rate": 0.39, "base": 185215 },
+    { "lower": 887001, "upper": 1878600, "rate": 0.41, "base": 259783 },
+    { "lower": 1878601, "upper": null, "rate": 0.45, "base": 666339 }
+  ],
+  "rebates": {
+    "primary": 17820,
+    "secondary": 9765,
+    "tertiary": 3249
+  }
+}
