@@ -116,7 +116,7 @@ st.title("💰 Hourly Rate Cost-to-Company Calculator")
 
 hourly_rate = st.number_input("Enter Hourly Rate (ZAR)", min_value=0.0, value=200.0, step=1.0)
 hours_per_day = st.number_input("Hours Worked per Day", min_value=1, value=8, step=1)
-start_date = st.date_input("Start Date", pd.to_datetime("2025-10-01"))
+start_date = st.date_input("Start Date", pd.to_datetime("2026-01-01"))
 end_date = st.date_input("End Date", pd.to_datetime("2026-12-31"))
 country = st.text_input("Country Code (default ZA)", "ZA")
 age = st.number_input("Enter Age (for rebate)", min_value=18, value=30, step=1)
