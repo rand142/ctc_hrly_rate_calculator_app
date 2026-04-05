@@ -1,4 +1,4 @@
-    import streamlit as st
+import streamlit as st
 import pandas as pd
 import holidays
 
@@ -53,7 +53,7 @@ st.set_page_config(page_title="CTC Calculator", layout="centered")
 st.title("💰 Hourly Rate Cost-to-Company Calculator")
 
 # Inputs
-hourly_rate = st.number_input("Enter Hourly Rate (ZAR)", min_value=0.0, value=556.5, step=10)
+hourly_rate = st.number_input("Enter Hourly Rate (ZAR)", min_value=0.0, value=556.5, step=1.0)
 hours_per_day = st.number_input("Hours Worked per Day", min_value=1, value=8, step=1)
 start_date = st.date_input("Start Date", pd.to_datetime("2026-01-01"))
 end_date = st.date_input("End Date", pd.to_datetime("2026-12-31"))
